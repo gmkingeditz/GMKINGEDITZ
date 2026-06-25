@@ -1,0 +1,16 @@
+# GM King Editz - robots.txt
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://gurumoorthigm7-cmd.github.io/GM_KING_EDITZ/sitemap.xml
+
+# Allow all major search engine bots
+User-agent: Googlebot
+Allow: /
+
+User-agent: Bingbot
+Allow: /
+
+User-agent: facebookexternalhit
+Allow: /
