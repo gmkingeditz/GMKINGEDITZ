@@ -3,7 +3,7 @@ User-agent: *
 Allow: /
 
 # Sitemap location
-Sitemap: https://gurumoorthigm7-cmd.github.io/GM_KING_EDITZ/sitemap.xml
+Sitemap: https://gmkingeditz.github.io/GMKINGEDITZ/sitemap.xml
 
 # Allow all major search engine bots
 User-agent: Googlebot
