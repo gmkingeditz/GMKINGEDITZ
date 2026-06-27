@@ -1147,6 +1147,8 @@
      MOBILE ≤ 900px
   ══════════════════════════ */
   @media (max-width: 900px) {
+    .process-grid { grid-template-columns: 1fr !important; max-width: 320px !important; margin: 1.5rem auto 0 !important; }
+    #process { padding: 3rem 1.5rem !important; }
     .hamburger     { display: flex; }
     .nav-links     { display: none; }
     .mobile-drawer { display: block; }
@@ -1190,6 +1192,7 @@
   <ul class="nav-links" id="navLinks">
     <li><a href="#about">About</a></li>
     <li><a href="#portfolio">Portfolio</a></li>
+    <li><a href="#process">Process</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="#pricing">Pricing</a></li>
     <li><a href="#get-quote" style="color:var(--gold);border:1px solid var(--gold);padding:0.3rem 0.9rem;border-radius:4px;">Get Quote</a></li>
@@ -1670,7 +1673,7 @@
   <div class="section-label">My Process</div>
   <h2>HOW I <span style="color:var(--gold)">WORK</span></h2>
   <div class="gold-divider"></div>
-  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:2rem;max-width:900px;margin:3rem auto 0;">
+  <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:1.2rem;max-width:900px;margin:2rem auto 0;" class="process-grid">
     <div style="text-align:center;padding:2rem 1.5rem;background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:8px;">
       <div style="width:56px;height:56px;background:var(--gold);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 1.2rem;font-weight:900;color:#000;font-size:1.3rem;">1</div>
       <h4 style="color:var(--gold);font-family:'Bebas Neue',sans-serif;letter-spacing:2px;font-size:1.1rem;margin-bottom:0.6rem;">BRIEF & ASSETS</h4>
