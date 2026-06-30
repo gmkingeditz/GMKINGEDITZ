@@ -149,6 +149,29 @@
 
   html { scroll-behavior: smooth; }
 
+  /* ── Play & Win game ── */
+  .pw-target {
+    position: absolute;
+    border-radius: 50%;
+    cursor: pointer;
+    transform: translate(-50%, -50%) scale(0);
+    animation: pwPop 0.18s ease forwards;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    user-select: none;
+    box-shadow: 0 0 18px currentColor;
+  }
+  .pw-target.gold  { background: radial-gradient(circle at 35% 35%, #E8C97A, #8B6914); border:2px solid #E8C97A; }
+  .pw-target.bomb  { background: radial-gradient(circle at 35% 35%, #555, #1a1a1a); border:2px solid #EF4444; box-shadow:0 0 14px rgba(239,68,68,0.5); }
+  .pw-target.bonus { background: radial-gradient(circle at 35% 35%, #60A5FA, #1D4ED8); border:2px solid #93C5FD; box-shadow:0 0 14px rgba(96,165,250,0.6); }
+  @keyframes pwPop { 0%{transform:translate(-50%,-50%) scale(0);opacity:0;} 70%{transform:translate(-50%,-50%) scale(1.15);opacity:1;} 100%{transform:translate(-50%,-50%) scale(1);opacity:1;} }
+  @keyframes pwPopOut { to { transform: translate(-50%,-50%) scale(0); opacity:0; } }
+  .pw-float { position:absolute; font-family:'Bebas Neue',sans-serif; font-size:16px; font-weight:700; pointer-events:none; animation: pwFloatUp 0.7s ease forwards; z-index:10; }
+  @keyframes pwFloatUp { 0%{opacity:1;transform:translate(-50%,-50%);} 100%{opacity:0;transform:translate(-50%, calc(-50% - 60px));} }
+  .pw-miss-flash { position:absolute; inset:0; background:rgba(239,68,68,0.12); border-radius:16px; pointer-events:none; animation: pwFlashOut 0.3s ease forwards; }
+  @keyframes pwFlashOut { to { opacity:0; } }
+
   body {
     background: var(--black);
     color: var(--white);
@@ -1195,6 +1218,8 @@
     <li><a href="#process">Process</a></li>
     <li><a href="#services">Services</a></li>
     <li><a href="#pricing">Pricing</a></li>
+    <li><a href="#play-win">Play & Win</a></li>
+    <li><a href="#price-calc">Calculator</a></li>
     <li><a href="#get-quote" style="color:var(--gold);border:1px solid var(--gold);padding:0.3rem 0.9rem;border-radius:4px;">Get Quote</a></li>
     <li><a href="#contact">Contact</a></li>
   </ul>
@@ -1213,6 +1238,8 @@
       
       <li><a href="#services"       class="drawer-link">Services</a></li>
       <li><a href="#pricing"        class="drawer-link">Pricing</a></li>
+      <li><a href="#play-win"       class="drawer-link">Play & Win</a></li>
+      <li><a href="#price-calc"     class="drawer-link">Calculator</a></li>
       <li><a href="#contact"        class="drawer-link">Contact</a></li>
     </ul>
     <div class="drawer-social">
@@ -1692,6 +1719,134 @@
   </div>
 </section>
 
+<!-- ══════════ PLAY & WIN GAME ══════════ -->
+<section style="background:var(--black);padding:6rem 4rem;" id="play-win">
+  <div class="section-label">Take a Break</div>
+  <h2>PLAY & <span style="color:var(--gold)">WIN</span></h2>
+  <div class="gold-divider"></div>
+  <p style="text-align:center;color:var(--gray);font-size:0.9rem;max-width:600px;margin:1rem auto 2.5rem;line-height:1.7;">
+    Test your reflexes while I edit your next masterpiece. Score 200+ and screenshot it — DM me for a surprise discount! 🎯
+  </p>
+
+  <div style="max-width:600px;margin:0 auto;">
+    <!-- HUD -->
+    <div style="display:flex;justify-content:center;gap:14px;margin-bottom:14px;flex-wrap:wrap;">
+      <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:10px 18px;text-align:center;min-width:74px;">
+        <div id="pwScore" style="font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:700;color:var(--gold);">0</div>
+        <div style="font-size:10px;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;">Score</div>
+      </div>
+      <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:10px 18px;text-align:center;min-width:74px;">
+        <div id="pwTime" style="font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:700;color:var(--gold);">30</div>
+        <div style="font-size:10px;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;">Time</div>
+      </div>
+      <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:10px 18px;text-align:center;min-width:74px;">
+        <div id="pwHits" style="font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:700;color:#22C55E;">0</div>
+        <div style="font-size:10px;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;">Hits</div>
+      </div>
+      <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:10px;padding:10px 18px;text-align:center;min-width:74px;">
+        <div id="pwMisses" style="font-family:'Bebas Neue',sans-serif;font-size:22px;font-weight:700;color:#EF4444;">0</div>
+        <div style="font-size:10px;color:var(--gray);letter-spacing:1.5px;text-transform:uppercase;margin-top:2px;">Misses</div>
+      </div>
+    </div>
+
+    <!-- Timer bar -->
+    <div style="width:100%;height:6px;background:var(--dark2);border-radius:4px;margin-bottom:14px;overflow:hidden;">
+      <div id="pwTimerBar" style="height:100%;background:var(--gold);border-radius:4px;width:100%;transition:width 0.1s linear, background 0.3s;"></div>
+    </div>
+
+    <!-- Difficulty -->
+    <div style="display:flex;gap:8px;margin-bottom:14px;justify-content:center;">
+      <button class="pw-diff active" data-d="easy" onclick="pwSetDiff('easy',this)" style="background:rgba(201,168,76,0.15);border:1px solid var(--gold);color:var(--gold);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">Easy</button>
+      <button class="pw-diff" data-d="medium" onclick="pwSetDiff('medium',this)" style="background:var(--dark2);border:1px solid rgba(201,168,76,0.2);color:var(--gray);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">Medium</button>
+      <button class="pw-diff" data-d="hard" onclick="pwSetDiff('hard',this)" style="background:var(--dark2);border:1px solid rgba(201,168,76,0.2);color:var(--gray);padding:6px 16px;border-radius:20px;font-size:12px;font-weight:600;cursor:pointer;">Hard</button>
+    </div>
+
+    <!-- ARENA -->
+    <div id="pwArena" onclick="pwMissClick(event)" style="width:100%;aspect-ratio:16/10;background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:16px;position:relative;overflow:hidden;cursor:crosshair;box-shadow:0 0 40px rgba(0,0,0,0.6);">
+      <div id="pwOverlay" style="position:absolute;inset:0;background:rgba(0,0,0,0.88);border-radius:16px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;z-index:20;backdrop-filter:blur(4px);">
+        <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(20px,4vw,28px);font-weight:700;letter-spacing:2px;color:var(--gold);text-shadow:0 0 20px rgba(201,168,76,0.5);text-align:center;">CLICK TARGET</div>
+        <div style="font-size:13px;color:var(--gray);text-align:center;padding:0 20px;line-height:1.6;">
+          🎯 Gold = +10 &nbsp; 💙 Blue = +25 &nbsp; 💣 Bomb = -15<br>Click before targets vanish!
+        </div>
+        <button onclick="pwStartGame(event)" style="background:var(--gold);color:#000;border:none;padding:13px 40px;border-radius:40px;font-family:'Bebas Neue',sans-serif;font-size:15px;font-weight:700;letter-spacing:1.5px;cursor:pointer;box-shadow:0 0 20px rgba(201,168,76,0.35);">START GAME</button>
+      </div>
+    </div>
+
+    <!-- Legend -->
+    <div style="display:flex;gap:16px;flex-wrap:wrap;justify-content:center;margin:14px 0 0;font-size:12px;color:var(--gray);">
+      <span style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:50%;background:var(--gold);"></div> Gold +10</span>
+      <span style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:50%;background:#3B82F6;"></div> Blue +25</span>
+      <span style="display:flex;align-items:center;gap:5px;"><div style="width:12px;height:12px;border-radius:50%;background:#333;border:1.5px solid #EF4444;"></div> Bomb -15</span>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════ PRICE CALCULATOR ══════════ -->
+<section style="background:var(--dark2);padding:6rem 4rem;" id="price-calc">
+  <div class="section-label">Instant Estimate</div>
+  <h2>PRICE <span style="color:var(--gold)">CALCULATOR</span></h2>
+  <div class="gold-divider"></div>
+  <p style="text-align:center;color:var(--gray);font-size:0.9rem;max-width:600px;margin:1rem auto 2.5rem;line-height:1.7;">
+    Select your service, complexity and timeline — see your estimate instantly, then book directly on WhatsApp.
+  </p>
+
+  <div style="max-width:640px;margin:0 auto;">
+    <!-- Service -->
+    <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:14px;padding:1.6rem 1.4rem;margin-bottom:0.9rem;">
+      <div style="font-size:0.75rem;font-weight:700;letter-spacing:2px;color:var(--gold-dark);text-transform:uppercase;margin-bottom:0.9rem;">01 — Service Type</div>
+      <div id="pcServiceChips" style="display:flex;flex-wrap:wrap;gap:8px;">
+        <div class="pc-chip" data-val="video" onclick="pcToggleChip(this)" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 16px;border-radius:30px;font-size:0.85rem;font-weight:500;cursor:pointer;user-select:none;">🎬 Video Editing</div>
+        <div class="pc-chip" data-val="web" onclick="pcToggleChip(this)" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 16px;border-radius:30px;font-size:0.85rem;font-weight:500;cursor:pointer;user-select:none;">🌐 Website Design</div>
+        <div class="pc-chip" data-val="logo" onclick="pcToggleChip(this)" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 16px;border-radius:30px;font-size:0.85rem;font-weight:500;cursor:pointer;user-select:none;">✏️ Logo Design</div>
+        <div class="pc-chip" data-val="social" onclick="pcToggleChip(this)" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 16px;border-radius:30px;font-size:0.85rem;font-weight:500;cursor:pointer;user-select:none;">📱 Social Media Posts</div>
+        <div class="pc-chip" data-val="reels" onclick="pcToggleChip(this)" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 16px;border-radius:30px;font-size:0.85rem;font-weight:500;cursor:pointer;user-select:none;">🎞️ Reels / Shorts</div>
+        <div class="pc-chip" data-val="thumb" onclick="pcToggleChip(this)" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 16px;border-radius:30px;font-size:0.85rem;font-weight:500;cursor:pointer;user-select:none;">🖼️ Thumbnails</div>
+      </div>
+    </div>
+
+    <!-- Complexity -->
+    <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:14px;padding:1.6rem 1.4rem;margin-bottom:0.9rem;">
+      <div style="font-size:0.75rem;font-weight:700;letter-spacing:2px;color:var(--gold-dark);text-transform:uppercase;margin-bottom:0.9rem;">02 — Complexity</div>
+      <div id="pcComplexChips" style="display:flex;flex-wrap:wrap;gap:8px;">
+        <div class="pc-radio selected" data-val="basic" onclick="pcSelectRadio(this,'pcComplexChips')" style="background:rgba(201,168,76,0.12);border:1px solid var(--gold);color:var(--gold);padding:8px 18px;border-radius:30px;font-size:0.85rem;cursor:pointer;user-select:none;">Basic</div>
+        <div class="pc-radio" data-val="standard" onclick="pcSelectRadio(this,'pcComplexChips')" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 18px;border-radius:30px;font-size:0.85rem;cursor:pointer;user-select:none;">Standard</div>
+        <div class="pc-radio" data-val="premium" onclick="pcSelectRadio(this,'pcComplexChips')" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 18px;border-radius:30px;font-size:0.85rem;cursor:pointer;user-select:none;">Premium</div>
+      </div>
+    </div>
+
+    <!-- Quantity -->
+    <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:14px;padding:1.6rem 1.4rem;margin-bottom:0.9rem;">
+      <div style="font-size:0.75rem;font-weight:700;letter-spacing:2px;color:var(--gold-dark);text-transform:uppercase;margin-bottom:0.9rem;">03 — Quantity</div>
+      <div style="display:flex;align-items:center;gap:14px;">
+        <label style="font-size:0.85rem;color:var(--gray);min-width:110px;">How many pieces?</label>
+        <input type="range" id="pcQtySlider" min="1" max="20" value="1" oninput="document.getElementById('pcQtyVal').textContent=this.value" style="flex:1;accent-color:#C9A84C;cursor:pointer;">
+        <span id="pcQtyVal" style="font-family:'Bebas Neue',sans-serif;font-size:1rem;color:var(--gold);min-width:30px;text-align:right;">1</span>
+      </div>
+    </div>
+
+    <!-- Delivery -->
+    <div style="background:var(--dark);border:1px solid rgba(201,168,76,0.2);border-radius:14px;padding:1.6rem 1.4rem;margin-bottom:1.4rem;">
+      <div style="font-size:0.75rem;font-weight:700;letter-spacing:2px;color:var(--gold-dark);text-transform:uppercase;margin-bottom:0.9rem;">04 — Delivery Speed</div>
+      <div id="pcDeliveryChips" style="display:flex;flex-wrap:wrap;gap:8px;">
+        <div class="pc-radio selected" data-val="normal" onclick="pcSelectRadio(this,'pcDeliveryChips')" style="background:rgba(201,168,76,0.12);border:1px solid var(--gold);color:var(--gold);padding:8px 18px;border-radius:30px;font-size:0.85rem;cursor:pointer;user-select:none;">Normal (5–7 days)</div>
+        <div class="pc-radio" data-val="fast" onclick="pcSelectRadio(this,'pcDeliveryChips')" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 18px;border-radius:30px;font-size:0.85rem;cursor:pointer;user-select:none;">Fast (2–3 days)</div>
+        <div class="pc-radio" data-val="urgent" onclick="pcSelectRadio(this,'pcDeliveryChips')" style="background:var(--dark2);border:1px solid rgba(255,255,255,0.1);color:var(--gray);padding:8px 18px;border-radius:30px;font-size:0.85rem;cursor:pointer;user-select:none;">Urgent (24 hrs)</div>
+      </div>
+    </div>
+
+    <button onclick="pcCalculate()" class="btn btn-primary" style="width:100%;padding:1rem;font-size:1rem;">Calculate My Price ⚡</button>
+
+    <div id="pcResultBox" style="display:none;background:linear-gradient(135deg,#1A1200,#0A0800);border:1px solid var(--gold-dark);border-radius:14px;padding:1.8rem 1.4rem;text-align:center;margin-top:1.2rem;">
+      <div style="font-size:0.75rem;letter-spacing:2px;color:var(--gray);text-transform:uppercase;margin-bottom:0.5rem;">Estimated Price</div>
+      <div id="pcResultPrice" style="font-family:'Bebas Neue',sans-serif;font-size:clamp(28px,6vw,42px);font-weight:700;color:var(--gold);text-shadow:0 0 24px rgba(201,168,76,0.5);margin-bottom:0.4rem;">₹0</div>
+      <div id="pcResultNote" style="font-size:0.78rem;color:var(--gray);margin-bottom:1.2rem;"></div>
+      <a id="pcWaLink" href="#" target="_blank" style="display:inline-flex;align-items:center;gap:8px;background:#25D366;color:#000;padding:0.8rem 1.8rem;border-radius:40px;font-weight:700;font-size:0.9rem;text-decoration:none;">
+        💬 Book via WhatsApp
+      </a>
+    </div>
+  </div>
+</section>
+
 <!-- ══════════ GET QUOTE FORM ══════════ -->
 <section style="background:var(--black);padding:6rem 4rem;" id="get-quote">
   <div class="section-label">Quick Enquiry</div>
@@ -1999,5 +2154,194 @@ document.querySelectorAll('img').forEach(img => {
   if (!img.getAttribute('alt'))     img.setAttribute('alt', 'GM King Editz - Video Editor & Website Creator Tamil Nadu');
 });
 </script>
+<script>
+// ══════════ PLAY & WIN GAME ══════════
+(function(){
+  const PW_DURATION = 30;
+  const PW_DIFF = {
+    easy:   { spawnMs: 1000, lifeMs: 2200, size: [52, 68], bombChance: 0.12, bonusChance: 0.10 },
+    medium: { spawnMs: 700,  lifeMs: 1700, size: [40, 56], bombChance: 0.18, bonusChance: 0.14 },
+    hard:   { spawnMs: 450,  lifeMs: 1200, size: [30, 46], bombChance: 0.22, bonusChance: 0.18 },
+  };
+  let pwDiff = 'easy';
+  let score=0, hits=0, misses=0, streak=0, bestStreak=0;
+  let timeLeft = PW_DURATION;
+  let active = false;
+  let spawnTimer, countdownTimer;
+  let liveTargets = [];
+
+  const arena = document.getElementById('pwArena');
+  const overlay = document.getElementById('pwOverlay');
+  const timerBar = document.getElementById('pwTimerBar');
+
+  window.pwSetDiff = function(d, btn){
+    pwDiff = d;
+    document.querySelectorAll('.pw-diff').forEach(b=>{
+      b.style.background='var(--dark2)'; b.style.borderColor='rgba(201,168,76,0.2)'; b.style.color='var(--gray)';
+    });
+    btn.style.background='rgba(201,168,76,0.15)'; btn.style.borderColor='var(--gold)'; btn.style.color='var(--gold)';
+  };
+
+  window.pwStartGame = function(e){
+    e.stopPropagation();
+    score=hits=misses=streak=0; timeLeft=PW_DURATION; active=true;
+    liveTargets=[];
+    arena.querySelectorAll('.pw-target').forEach(t=>t.remove());
+    overlay.style.display='none';
+    pwUpdateHUD(); pwUpdateBar();
+
+    spawnTimer = setInterval(pwSpawn, PW_DIFF[pwDiff].spawnMs);
+    countdownTimer = setInterval(()=>{
+      timeLeft--; pwUpdateBar();
+      document.getElementById('pwTime').textContent = timeLeft;
+      if(timeLeft<=0) pwEnd();
+    },1000);
+  };
+
+  function pwUpdateBar(){
+    const pct=(timeLeft/PW_DURATION)*100;
+    timerBar.style.width=pct+'%';
+    timerBar.style.background = pct>50?'#C9A84C':pct>25?'#F97316':'#EF4444';
+  }
+
+  function pwSpawn(){
+    const cfg=PW_DIFF[pwDiff];
+    const size=cfg.size[0]+Math.random()*(cfg.size[1]-cfg.size[0]);
+    const pad=size/2+4;
+    const w=arena.offsetWidth, h=arena.offsetHeight;
+    const x=pad+Math.random()*(w-pad*2);
+    const y=pad+Math.random()*(h-pad*2);
+    const r=Math.random();
+    let type = r<cfg.bombChance?'bomb':r<cfg.bombChance+cfg.bonusChance?'bonus':'gold';
+    const emoji = type==='gold'?'🎯':type==='bomb'?'💣':'💙';
+
+    const el=document.createElement('div');
+    el.className='pw-target '+type;
+    el.style.cssText=`left:${x}px;top:${y}px;width:${size}px;height:${size}px;font-size:${size*0.4}px`;
+    el.textContent=emoji;
+    el.onclick=(ev)=>{ev.stopPropagation(); pwClick(el,x,y,type);};
+    arena.appendChild(el);
+    liveTargets.push(el);
+
+    el._t=setTimeout(()=>{
+      if(el.parentNode){
+        if(type!=='bomb'){ misses++; streak=0; pwUpdateHUD(); pwFlash(); }
+        pwRemove(el);
+      }
+    }, cfg.lifeMs);
+  }
+
+  function pwClick(el,x,y,type){
+    if(!active) return;
+    let pts = type==='gold'?10:type==='bonus'?25:-15;
+    if(type!=='bomb'){ hits++; streak++; bestStreak=Math.max(bestStreak,streak); } else streak=0;
+    if(streak>=3) pts=Math.round(pts*1.5);
+    score=Math.max(0,score+pts);
+    pwFloatText(x,y,(pts>0?'+':'')+pts, type==='bomb'?'#EF4444':type==='bonus'?'#93C5FD':'#C9A84C');
+    clearTimeout(el._t);
+    pwRemove(el);
+    pwUpdateHUD();
+  }
+
+  window.pwMissClick = function(e){
+    if(!active) return;
+    if(e.target!==arena) return;
+    misses++; streak=0; pwUpdateHUD(); pwFlash();
+  };
+
+  function pwRemove(el){
+    el.style.animation='pwPopOut 0.15s ease forwards';
+    setTimeout(()=>el.remove(),150);
+    liveTargets=liveTargets.filter(t=>t!==el);
+  }
+  function pwFlash(){
+    const f=document.createElement('div'); f.className='pw-miss-flash';
+    arena.appendChild(f); setTimeout(()=>f.remove(),320);
+  }
+  function pwFloatText(x,y,text,color){
+    const el=document.createElement('div'); el.className='pw-float';
+    el.style.cssText=`left:${x}px;top:${y}px;color:${color}`; el.textContent=text;
+    arena.appendChild(el); setTimeout(()=>el.remove(),720);
+  }
+  function pwUpdateHUD(){
+    document.getElementById('pwScore').textContent=score;
+    document.getElementById('pwHits').textContent=hits;
+    document.getElementById('pwMisses').textContent=misses;
+  }
+
+  function pwEnd(){
+    active=false;
+    clearInterval(spawnTimer); clearInterval(countdownTimer);
+    liveTargets.forEach(t=>{clearTimeout(t._t); t.remove();});
+    liveTargets=[];
+    const acc = hits+misses>0 ? Math.round((hits/(hits+misses))*100) : 0;
+    const grade = score>=300?'🏆 LEGEND':score>=200?'⭐ PRO':score>=100?'👍 GOOD':'🎯 KEEP TRYING';
+    overlay.style.display='';
+    overlay.innerHTML = `
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(18px,4vw,24px);font-weight:700;letter-spacing:2px;color:var(--gold);text-shadow:0 0 20px rgba(201,168,76,0.5);">${grade}</div>
+      <div style="font-family:'Bebas Neue',sans-serif;font-size:clamp(30px,6vw,42px);font-weight:700;color:var(--gold);text-shadow:0 0 30px rgba(201,168,76,0.6);">${score} pts</div>
+      <div style="display:flex;gap:24px;">
+        <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold-light);">${hits}</div><div style="font-size:11px;color:var(--gray);letter-spacing:1px;margin-top:2px;">Hits</div></div>
+        <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold-light);">${misses}</div><div style="font-size:11px;color:var(--gray);letter-spacing:1px;margin-top:2px;">Misses</div></div>
+        <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold-light);">${acc}%</div><div style="font-size:11px;color:var(--gray);letter-spacing:1px;margin-top:2px;">Accuracy</div></div>
+        <div style="text-align:center;"><div style="font-family:'Bebas Neue',sans-serif;font-size:18px;color:var(--gold-light);">${bestStreak}</div><div style="font-size:11px;color:var(--gray);letter-spacing:1px;margin-top:2px;">Best Streak</div></div>
+      </div>
+      <div style="font-size:12px;color:var(--gray);text-align:center;">Score 200+? Screenshot & DM for a discount! 💬</div>
+      <button onclick="pwStartGame(event)" style="background:var(--gold);color:#000;border:none;padding:13px 40px;border-radius:40px;font-family:'Bebas Neue',sans-serif;font-size:15px;font-weight:700;letter-spacing:1.5px;cursor:pointer;box-shadow:0 0 20px rgba(201,168,76,0.35);">PLAY AGAIN</button>
+    `;
+  }
+
+  pwUpdateBar();
+})();
+
+// ══════════ PRICE CALCULATOR ══════════
+(function(){
+  const basePrices = { video:800, web:3000, logo:600, social:200, reels:500, thumb:150 };
+  const complexMult = { basic:1, standard:1.5, premium:2.2 };
+  const deliveryMult = { normal:1, fast:1.3, urgent:1.6 };
+
+  window.pcToggleChip = function(el){
+    const sel = el.classList.toggle('selected');
+    el.style.background = sel ? 'rgba(201,168,76,0.12)' : 'var(--dark2)';
+    el.style.borderColor = sel ? '#C9A84C' : 'rgba(255,255,255,0.1)';
+    el.style.color = sel ? '#C9A84C' : 'var(--gray)';
+  };
+
+  window.pcSelectRadio = function(el, groupId){
+    document.querySelectorAll('#'+groupId+' .pc-radio').forEach(c=>{
+      c.classList.remove('selected');
+      c.style.background='var(--dark2)'; c.style.borderColor='rgba(255,255,255,0.1)'; c.style.color='var(--gray)';
+    });
+    el.classList.add('selected');
+    el.style.background='rgba(201,168,76,0.12)'; el.style.borderColor='#C9A84C'; el.style.color='#C9A84C';
+  };
+
+  window.pcCalculate = function(){
+    const selected = [...document.querySelectorAll('#pcServiceChips .pc-chip.selected')].map(c=>c.dataset.val);
+    if(selected.length===0){ alert('Oru service select pannunga!'); return; }
+
+    const baseTotal = selected.reduce((sum,s)=>sum+(basePrices[s]||0),0);
+    const complex = document.querySelector('#pcComplexChips .pc-radio.selected')?.dataset.val || 'basic';
+    const delivery = document.querySelector('#pcDeliveryChips .pc-radio.selected')?.dataset.val || 'normal';
+    const qty = parseInt(document.getElementById('pcQtySlider').value);
+
+    const price = Math.round(baseTotal * complexMult[complex] * deliveryMult[delivery] * qty);
+
+    const box = document.getElementById('pcResultBox');
+    document.getElementById('pcResultPrice').textContent = '₹' + price.toLocaleString('en-IN');
+
+    const deliveryText = { normal:'5–7 days', fast:'2–3 days', urgent:'24 hours' };
+    document.getElementById('pcResultNote').textContent =
+      `${selected.length} service(s) · ${complex} quality · Delivery in ${deliveryText[delivery]}`;
+
+    const msg = encodeURIComponent(`Hi GM King Editz! 👋\n\nI need:\nServices: ${selected.join(', ')}\nComplexity: ${complex}\nQuantity: ${qty}\nDelivery: ${deliveryText[delivery]}\nEstimated: ₹${price.toLocaleString('en-IN')}\n\nPlease confirm and let's start! 🙏`);
+    document.getElementById('pcWaLink').href = `https://wa.me/917904307394?text=${msg}`;
+
+    box.style.display = 'block';
+    box.scrollIntoView({behavior:'smooth', block:'nearest'});
+  };
+})();
+</script>
+
 </body>
 </html>
