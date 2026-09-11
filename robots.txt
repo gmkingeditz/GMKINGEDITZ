@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://gmkingeditz.github.io/GMKINGEDITZ/sitemap.xml
